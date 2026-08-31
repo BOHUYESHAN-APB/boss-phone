@@ -1,0 +1,20 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "boss/hangup",
+  "title": "hangup",
+  "description": "双向：挂断通话。",
+  "type": "object",
+  "properties": {
+    "call_id": {
+      "type": "string",
+      "description": "通话 ID"
+    },
+    "reason": {
+      "type": "string",
+      "enum": ["local", "remote", "error"],
+      "x-enum": "HangupReason",
+      "description": "本端挂断 / 对端挂断 / 异常"
+    }
+  },
+  "required": ["call_id", "reason"]
+}

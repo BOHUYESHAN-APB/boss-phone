@@ -1,0 +1,36 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "boss/ring",
+  "title": "ring",
+  "description": "Hub → 端：来电/报警。red_alert 直接驱动红灯并强制响铃。",
+  "type": "object",
+  "properties": {
+    "ring_id": {
+      "type": "string",
+      "description": "通话/来电 ID"
+    },
+    "agent_id": {
+      "type": "string",
+      "description": "来电方（operator 来电时为 operator）"
+    },
+    "kind": {
+      "type": "string",
+      "enum": ["agent_call", "red_alert", "operator"],
+      "x-enum": "RingKind",
+      "description": "Agent 来电 / 红色报警 / 总机来电"
+    },
+    "reason": {
+      "type": "string",
+      "description": "来电/报警原因摘要"
+    },
+    "summary": {
+      "type": "string",
+      "description": "阻塞摘要（red_alert 必填，如“CI 失败：编译错误”）"
+    },
+    "ringtone": {
+      "type": "string",
+      "description": "铃声标识（可空，用默认）"
+    }
+  },
+  "required": ["ring_id", "agent_id", "kind", "reason"]
+}

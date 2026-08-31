@@ -1,0 +1,33 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "boss/hello",
+  "title": "hello",
+  "description": "任意端 → Hub：连接握手，携带协议版本、设备身份、能力集与断线补收游标。",
+  "type": "object",
+  "properties": {
+    "proto": {
+      "type": "integer",
+      "format": "uint32",
+      "description": "客户端支持的协议版本（当前 1）"
+    },
+    "device": {
+      "type": "string",
+      "description": "设备身份：passport:<mac> / android-app:<uuid>"
+    },
+    "fw": {
+      "type": "string",
+      "description": "固件/App 版本（如 0.1.0）"
+    },
+    "caps": {
+      "type": "array",
+      "items": { "type": "string" },
+      "description": "能力集（DESIGN_PROTOCOL §5 词汇表）"
+    },
+    "resume_seq": {
+      "type": "integer",
+      "format": "uint32",
+      "description": "上次会话最后收到的 seq，用于断线补收；首次连接不带"
+    }
+  },
+  "required": ["proto", "device", "fw", "caps"]
+}

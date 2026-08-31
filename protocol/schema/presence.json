@@ -1,0 +1,31 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "boss/presence",
+  "title": "presence",
+  "description": "插件 → Hub → 端：Agent 上线/下线事件，驱动电话簿联系人状态。",
+  "type": "object",
+  "properties": {
+    "agent_id": {
+      "type": "string",
+      "description": "仓库名（电话簿联系人名）"
+    },
+    "online": {
+      "type": "boolean",
+      "description": "上线/下线"
+    },
+    "cli": {
+      "type": "string",
+      "description": "claude-code / codex / opencode / trae"
+    },
+    "cwd": {
+      "type": "string",
+      "description": "工作目录"
+    },
+    "caps": {
+      "type": "array",
+      "items": { "type": "string" },
+      "description": "该 Agent 的能力（如 permission_suspend、usage），Hub 据此降级"
+    }
+  },
+  "required": ["agent_id", "online", "cli", "cwd", "caps"]
+}

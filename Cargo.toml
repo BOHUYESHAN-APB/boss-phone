@@ -1,0 +1,14 @@
+# BOSS PHONE monorepo cargo workspace
+# 固件（ESP-IDF 根项目）忽略本文件；固件 Rust 业务层与 M0 验证工具（stt-validate）共享协议 crate。
+# 注：PC 端 Hub / 插件桥是 Python 包，不经本 workspace（见 DESIGN_OVERVIEW §5）。
+[workspace]
+resolver = "2"
+members = ["tools/stt-validate", "protocol/rust"]
+
+[workspace.package]
+version = "0.1.0"
+edition = "2021"
+
+[profile.release]
+lto = true
+strip = true

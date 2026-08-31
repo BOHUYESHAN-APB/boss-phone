@@ -1,0 +1,29 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "boss/hello_ack",
+  "title": "hello_ack",
+  "description": "Hub → 端：握手确认，返回协商后的协议版本、服务端能力集与校时时间戳。",
+  "type": "object",
+  "properties": {
+    "proto": {
+      "type": "integer",
+      "format": "uint32",
+      "description": "协商后的共同版本（min 双方）"
+    },
+    "caps": {
+      "type": "array",
+      "items": { "type": "string" },
+      "description": "服务端能力集"
+    },
+    "device_id": {
+      "type": "string",
+      "description": "分配/确认的设备号"
+    },
+    "server_time": {
+      "type": "integer",
+      "format": "uint64",
+      "description": "服务端毫秒时间戳（端校准时钟用）"
+    }
+  },
+  "required": ["proto", "caps", "device_id", "server_time"]
+}

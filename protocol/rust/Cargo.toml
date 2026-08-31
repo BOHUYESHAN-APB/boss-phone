@@ -1,0 +1,9 @@
+[package]
+name = "boss-protocol"
+version.workspace = true
+edition.workspace = true
+description = "BOSS PHONE 通讯协议（结构声明生成 + 信封编解码层），hub 与固件业务层共用"
+
+[dependencies]
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"

@@ -1,0 +1,55 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "boss/answer",
+  "title": "answer",
+  "description": "端 → Hub → 插件：对 ask 的回答。单选 selection 单元素；多选 selection 数组；input 用 text 补全。",
+  "type": "object",
+  "properties": {
+    "ask_id": {
+      "type": "string",
+      "description": "对应的问题组 ID"
+    },
+    "answers": {
+      "type": "array",
+      "description": "每个被答题目的回答",
+      "items": {
+        "type": "object",
+        "x-struct": "AnswerEntry",
+        "description": "单题回答",
+        "properties": {
+          "q_no": {
+            "type": "integer",
+            "format": "uint32",
+            "description": "题号（与 ask.questions[].q_no 对应）"
+          },
+          "kind": {
+            "type": "string",
+            "enum": ["single", "multi", "input"],
+            "x-enum": "QuestionKind",
+            "description": "题目类型（回显 ask 中的 kind）"
+          },
+          "selection": {
+            "type": "array",
+            "items": { "type": "integer", "format": "uint32" },
+            "description": "选项下标数组（从 0 起，指向 ask.questions[].options；input 题为空）"
+          },
+          "text": {
+            "type": "string",
+            "description": "input 题的补全内容（选择题为空）"
+          }
+        },
+        "required": ["q_no", "kind", "selection"]
+      }
+    },
+    "answered_by": {
+      "type": "string",
+      "description": "device / android-app（多端场景先答先得）"
+    },
+    "ts": {
+      "type": "integer",
+      "format": "uint64",
+      "description": "回答时间（毫秒时间戳）"
+    }
+  },
+  "required": ["ask_id", "answers", "answered_by", "ts"]
+}

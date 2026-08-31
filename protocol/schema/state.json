@@ -1,0 +1,33 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "boss/state",
+  "title": "state",
+  "description": "插件 → Hub → 端：Agent 状态变更，驱动状态灯（running 绿 / waiting_input 黄 / blocked 红）。",
+  "type": "object",
+  "properties": {
+    "agent_id": {
+      "type": "string",
+      "description": "仓库名"
+    },
+    "state": {
+      "type": "string",
+      "enum": ["running", "waiting_input", "blocked"],
+      "x-enum": "AgentState",
+      "description": "运行 / 等待输入 / 阻塞"
+    },
+    "summary": {
+      "type": "string",
+      "description": "状态摘要（PC 端生成，板端只显示）"
+    },
+    "task": {
+      "type": "string",
+      "description": "当前任务简述（可空）"
+    },
+    "since": {
+      "type": "integer",
+      "format": "uint64",
+      "description": "状态起始时间（毫秒时间戳）"
+    }
+  },
+  "required": ["agent_id", "state", "summary", "since"]
+}

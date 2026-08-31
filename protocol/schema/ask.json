@@ -1,0 +1,62 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "boss/ask",
+  "title": "ask",
+  "description": "插件 → Hub → 端：权限请求/提问（核心交互）。问题数组有序，支持单选/多选/输入混合。",
+  "type": "object",
+  "properties": {
+    "ask_id": {
+      "type": "string",
+      "description": "问题组 ID（UUID）"
+    },
+    "agent_id": {
+      "type": "string",
+      "description": "发起 Agent"
+    },
+    "reason": {
+      "type": "string",
+      "description": "为什么需要权限/输入（摘要）"
+    },
+    "questions": {
+      "type": "array",
+      "description": "问题数组（有序）",
+      "items": {
+        "type": "object",
+        "x-struct": "Question",
+        "description": "单道问题",
+        "properties": {
+          "q_no": {
+            "type": "integer",
+            "format": "uint32",
+            "description": "题号（从 1 起）"
+          },
+          "kind": {
+            "type": "string",
+            "enum": ["single", "multi", "input"],
+            "x-enum": "QuestionKind",
+            "description": "单选 / 多选 / 需用户补全"
+          },
+          "prompt": {
+            "type": "string",
+            "description": "题目文本"
+          },
+          "options": {
+            "type": "array",
+            "items": { "type": "string" },
+            "description": "选项（input 题可空数组）"
+          },
+          "optional": {
+            "type": "boolean",
+            "description": "是否可跳过"
+          },
+          "default": {
+            "type": "string",
+            "description": "默认值（可选，input 题预填）"
+          }
+        },
+        "required": ["q_no", "kind", "prompt", "options", "optional"]
+      }
+    }
+  },
+  "required": ["ask_id", "agent_id", "reason", "questions"]
+}

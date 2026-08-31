@@ -1,0 +1,18 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "boss/ring_ack",
+  "title": "ring_ack",
+  "description": "端 → Hub：来电应答（接听/拒接）。",
+  "type": "object",
+  "properties": {
+    "ring_id": {
+      "type": "string",
+      "description": "对应的来电 ID"
+    },
+    "accept": {
+      "type": "boolean",
+      "description": "接听 / 拒接"
+    }
+  },
+  "required": ["ring_id", "accept"]
+}

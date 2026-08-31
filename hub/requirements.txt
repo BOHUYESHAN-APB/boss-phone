@@ -1,0 +1,11 @@
+# BOSS PHONE Hub（Python）运行依赖（DESIGN_HUB §8）
+pyserial>=3.5
+websockets>=12
+aiohttp>=3.9
+pydantic>=2
+psutil>=5.9
+
+# STT 引擎按需选装：
+#   local whisper：   pip install "faster-whisper>=1.0"
+#   windows-native：  PowerShell 自带 System.Speech，零安装
+#   cloud-api：       M0 为 stub，选定服务商（字节火山/讯飞/OpenAI）后接入

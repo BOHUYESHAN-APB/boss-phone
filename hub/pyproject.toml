@@ -1,0 +1,26 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "boss-hub"
+version = "0.1.0"
+description = "BOSS PHONE PC 总机房（Python + asyncio）——中枢中转：STT/LLM/意图路由/备忘（DESIGN_HUB）"
+requires-python = ">=3.11"
+dependencies = [
+    "pyserial>=3.5",     # gateway：CDC 串口入口
+    "websockets>=12",    # gateway：局域网 WS 入口 / 插件桥本机 WS
+    "aiohttp>=3.9",      # gateway：云中继出站隧道
+    "pydantic>=2",       # 配置与消息校验
+    "psutil>=5.9",       # telemetry：PC 资源采集
+]
+
+[project.optional-dependencies]
+stt-whisper = ["faster-whisper>=1.0"]   # 本地 whisper 引擎（CTranslate2 后端）
+dev = ["pytest>=8"]
+
+[project.scripts]
+boss-hub = "hub.cli:main"
+
+[tool.setuptools.packages.find]
+include = ["hub*"]

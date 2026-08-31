@@ -1,0 +1,19 @@
+[package]
+name = "stt-validate"
+version.workspace = true
+edition.workspace = true
+description = "BOSS PHONE M0 STT 验证工具（hub-lite：WAV → PCM → 文本；生产 STT 在 Python hub，本工具保留作评测对比）"
+
+[features]
+default = []
+# whisper.cpp 引擎：需要 cmake + C++ 编译器（whisper.cpp 从源码构建）
+stt-whisper = ["dep:whisper-rs"]
+
+[dependencies]
+anyhow = "1"
+hound = "3.5"
+# 本地 Whisper 引擎（feature 门控：构建重，按需开启）
+whisper-rs = { version = "0.16", optional = true }
+
+# 注：windows-native 引擎走 PowerShell 子进程调 System.Speech，零第三方依赖
+# 注：cloud-api 引擎 M0 暂为 stub，选型（字节火山/讯飞/OpenAI）后实装

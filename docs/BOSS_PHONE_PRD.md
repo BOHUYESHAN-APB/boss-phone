@@ -2,7 +2,7 @@
 
 | 项目 | 内容 |
 |---|---|
-| 状态 | Draft v0.3（新增：总览驾驶舱 —— Token 消耗 / PC 资源遥测 / 提交与 CI 状态） |
+| 状态 | Draft v0.4（新增：安卓 App 对等富终端 —— web coding 工具 / 文本对话 / 复杂表单 / 完整上下文） |
 | 硬件平台 | FoloToy AI Passport（ESP32-C3，400KB SRAM / 8MB Flash / 无 PSRAM） |
 | 配套系统 | PC 端总机房、云中继、安卓伴侣 App、各 CLI Agent 插件 |
 | 日期 | 2026-08-24 |
@@ -21,7 +21,8 @@
 2. **一套协议，四种传输**：USB 有线、局域网 WiFi、BLE 伴侣、（未来）板载 LTE 共用同一套消息协议，差异全部下沉到传输层。兼容性是架构的自然结果，不是补丁。
 3. **三端联动，而非单端切换**：设备、手机、电脑各自感知环境并协同决策链路路由。设备在局域网内时，手机零负担（不收任何推送）；插着 USB 时一切流量走有线，最稳且零电池消耗。
 4. **手机系统体验**：不做单一功能的"工具屏"，而是完整的小型手机系统——状态栏、桌面、应用宫格、事件弹窗层。界面不单调，且天然可扩展新应用。
-5. **领导体验优先**：一切交互隐喻为"打电话"。用户不需要理解"Agent / 会话 / 权限请求"这些术语，只需要认识"联系人"和"红黄绿灯"。
+5. **多终端对等分层**：板子 = 随身快捷终端（语音 + 三键，低摩擦）；手机 App = 富终端（文本输入、完整上下文、直接对话，即一个 web coding 客户端）；PC = 全功能开发环境。三者跑**同一套协议**，功能按终端能力自然分层——板子做不了的复杂操作（打字、看长文、多任务并行）下沉到手机，手机不被浪费。
+6. **领导体验优先**：一切交互隐喻为"打电话"。用户不需要理解"Agent / 会话 / 权限请求"这些术语，只需要认识"联系人"和"红黄绿灯"。
 
 ### 1.3 目标用户
 
@@ -64,22 +65,69 @@ BLE 断开且无 WiFi              → 深睡，等推送唤醒或定时回连
 
 ### 3.1 组件总览
 
-```
-┌─────────┐  USB / WiFi / BLE / (LTE)  ┌──────────────────┐        ┌──────────────┐
-│ 📟 板子  │ ⇄────────────────────────⇄ │ 🖥️ PC 总机房      │ ⇄─────⇄ │ ☁️ 云中继     │
-│ 微型手机 │                            │ · 网关/会话管理    │        │ (阶段 3 引入) │
-│ 系统     │                            │  (WS + USB CDC)   │        └──────┬───────┘
-└─────────┘                            │ · 接线员 Agent    │               │ 厂商推送
-                                        │ · 调度中枢        │        ┌──────▼───────┐
-┌─────────┐      BLE                    │ · 插件桥          │        │ 📱 手机 App   │
-│ 📱 安卓  │ ⇄────────────────────────⇄ │                  │        │ (控制+数据面) │
-│ 伴侣 App │  (口袋网关)                 └────────┬─────────┘        └──────────────┘
-└─────────┘                                     │ 统一插件协议
-                                      ┌─────────▼────────┐
-                                      │ 🔌 CLI Agent 插件  │
-                                      │ Claude Code/Codex │
-                                      │ OpenCode/Trae     │
-                                      └──────────────────┘
+```svg
+<svg viewBox="0 0 800 360" xmlns="http://www.w3.org/2000/svg" font-family="ui-sans-serif,system-ui,Microsoft YaHei,sans-serif" font-size="12">
+  <defs>
+    <marker id="prd-arr" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M0,0 L10,5 L0,10 z" fill="#7c5cfc"/>
+    </marker>
+  </defs>
+  <style>
+    .bx { font-size: 14px; font-weight: 700; }
+    .bs { fill: #5b5b78; }
+    .lb { fill: #4a4a68; font-size: 11px; }
+  </style>
+
+  <!-- 板子 -->
+  <rect x="30" y="50" width="180" height="90" rx="10" fill="#e7e0fb" stroke="#7c5cfc" stroke-width="1.5"/>
+  <text x="120" y="78" text-anchor="middle" class="bx" fill="#3a2a7a">板子</text>
+  <text x="120" y="98" text-anchor="middle" class="bs">微型手机系统</text>
+  <text x="120" y="116" text-anchor="middle" class="bs">三键导航 / LVGL / 音频</text>
+  <text x="120" y="132" text-anchor="middle" class="bs">传输层抽象 + 链路监管</text>
+
+  <!-- PC 总机房 -->
+  <rect x="300" y="40" width="200" height="130" rx="10" fill="#d9e9f7" stroke="#3b82c4" stroke-width="1.5"/>
+  <text x="400" y="66" text-anchor="middle" class="bx" fill="#1c4d79">PC 总机房</text>
+  <text x="400" y="86" text-anchor="middle" class="bs">网关 / 会话管理 / 路由决策</text>
+  <text x="400" y="104" text-anchor="middle" class="bs">WS + USB CDC 双入口</text>
+  <text x="400" y="122" text-anchor="middle" class="bs">接线员 Agent / 调度中枢</text>
+  <text x="400" y="140" text-anchor="middle" class="bs">离线队列 / 遥测聚合</text>
+
+  <!-- 云中继 -->
+  <rect x="620" y="50" width="160" height="90" rx="10" fill="#f6e7c8" stroke="#e39b2f" stroke-width="1.5"/>
+  <text x="700" y="78" text-anchor="middle" class="bx" fill="#8a5a0a">云中继</text>
+  <text x="700" y="98" text-anchor="middle" class="bs">出站隧道（免端口映射）</text>
+  <text x="700" y="116" text-anchor="middle" class="bs">推送代理</text>
+  <text x="700" y="132" text-anchor="middle" class="bs">(阶段 3 引入)</text>
+
+  <!-- 安卓 App -->
+  <rect x="30" y="250" width="180" height="75" rx="10" fill="#cdeedd" stroke="#1f9d63" stroke-width="1.5"/>
+  <text x="120" y="276" text-anchor="middle" class="bx" fill="#0f6b43">安卓伴侣 App</text>
+  <text x="120" y="296" text-anchor="middle" class="bs">BLE 口袋网关 / 数据面</text>
+  <text x="120" y="314" text-anchor="middle" class="bs">对等富终端</text>
+
+  <!-- CLI 插件 -->
+  <rect x="390" y="250" width="210" height="80" rx="10" fill="#fbe4e4" stroke="#d64545" stroke-width="1.5"/>
+  <text x="495" y="276" text-anchor="middle" class="bx" fill="#8f2222">CLI Agent 插件</text>
+  <text x="495" y="296" text-anchor="middle" class="bs">Claude Code / Codex</text>
+  <text x="495" y="314" text-anchor="middle" class="bs">OpenCode / Trae</text>
+
+  <!-- 连线 -->
+  <line x1="210" y1="95" x2="300" y2="95" stroke="#7c5cfc" stroke-width="1.5" marker-end="url(#prd-arr)" marker-start="url(#prd-arr)"/>
+  <text x="255" y="87" text-anchor="middle" class="lb">USB / WiFi / BLE / (LTE)</text>
+
+  <line x1="500" y1="85" x2="620" y2="85" stroke="#e39b2f" stroke-width="1.5" marker-end="url(#prd-arr)" marker-start="url(#prd-arr)"/>
+  <text x="560" y="77" text-anchor="middle" class="lb">出站隧道 / 推送代理</text>
+
+  <line x1="120" y1="250" x2="120" y2="140" stroke="#1f9d63" stroke-width="1.5" marker-end="url(#prd-arr)" marker-start="url(#prd-arr)"/>
+  <text x="126" y="196" class="lb">BLE 口袋网关</text>
+
+  <line x1="430" y1="170" x2="430" y2="250" stroke="#d64545" stroke-width="1.5" marker-end="url(#prd-arr)" marker-start="url(#prd-arr)"/>
+  <text x="436" y="212" class="lb">统一插件协议</text>
+
+  <path d="M700,140 L700,345 L120,345 L120,325" fill="none" stroke="#e39b2f" stroke-width="1.5" stroke-dasharray="5,3" marker-end="url(#prd-arr)"/>
+  <text x="350" y="338" text-anchor="middle" class="lb">厂商推送</text>
+</svg>
 ```
 
 ### 3.2 各组件职责
@@ -92,7 +140,7 @@ BLE 断开且无 WiFi              → 深睡，等推送唤醒或定时回连
 | 调度中枢 | Agent 注册表、状态聚合、权限请求队列、多设备消息扇出 | — |
 | 插件桥 | 各 CLI 装统一插件：上报状态、转发权限请求、收回回答 | 每个 CLI 一份适配层，协议统一 |
 | 云中继 | 公网撮合点：PC 与手机/板子均主动外连（出站隧道，免端口映射，可穿 CGNAT）；推送代理 | 阶段 3 引入；UPnP 端口映射仅作直连加速 |
-| 安卓伴侣 App | 厂商推送保活、BLE 网关（数据面）、软终端 UI（没带板子时手机直接批权限）、临时热点控制 | 各厂商后台限制需引导白名单 |
+| 安卓伴侣 App | 厂商推送保活、BLE 网关（数据面）、**对等富终端**（与板子同协议同功能 + 文本对话 / 复杂表单打字 / 完整上下文查看，即 web coding 客户端）、临时热点控制 | 各厂商后台限制需引导白名单 |
 
 ### 3.3 协议兼容三原则（不可妥协）
 
@@ -110,23 +158,17 @@ BLE 断开且无 WiFi              → 深睡，等推送唤醒或定时回连
 
 ### 4.1 板端状态机
 
-```
-   ┌────────────────────────────────────────────────┐
-   │              USB 插入 + 网关在位                 │
-   │              （最高优先级，随时抢占）              │
-   ▼                                                │
-┌───────────┐   WiFi 关联成功                        │
-│DESK_USB   │ ──────────────────────────┐           │
-│ CDC 会话  │                           ▼           │
-│ 屏幕常亮  │                      ┌──────────┐      │
-└───────────┘                      │LAN_ONLINE│      │ WiFi 断开
-   ▲   拔线后回落到次优链路           │ WiFi+WS  │──────┐
-   │                                │ BLE 关闭 │      ▼
-   │                                └──────────┘  ┌───────────┐  BLE 回连超时(5min)
-   │        WiFi 重新关联 / 插线 ────────▲──────────┤ BLE_ONLINE│ ──────────→ ┌────────────┐
-   │                                    │          │ BLE 回连  │              │ DEEP_SLEEP │
-   └────────────────────────────────────┘          └───────────┘ ←─定时唤醒── │ 等推送/定时 │
-                                                                              └────────────┘
+```mermaid
+stateDiagram-v2
+    [*] --> DESK_USB : USB 插入 + 网关在位（最高优先级，随时抢占）
+    DESK_USB --> LAN_ONLINE : WiFi 关联成功
+    DESK_USB --> BLE_ONLINE : 拔线后回落（次优链路）
+    LAN_ONLINE --> BLE_ONLINE : WiFi 断开
+    BLE_ONLINE --> DEEP_SLEEP : BLE 回连超时(5min)
+    DEEP_SLEEP --> BLE_ONLINE : 定时唤醒 / 等推送
+    LAN_ONLINE --> DESK_USB : USB 插线
+    BLE_ONLINE --> DESK_USB : WiFi 重新关联
+    DEEP_SLEEP --> DESK_USB : 插线
 ```
 
 | 状态 | USB | WiFi | BLE | 屏幕 | 说明 |
@@ -197,7 +239,7 @@ USB CDC 会话活跃 → USB 路由（最高优先级，一切流量走有线）
 | FR-06 | 来电界面 | P0 | Agent 主动联系：响铃 + 全屏显示来电方与阻塞原因；OK 接听，长按 ▲ 拒接/挂断 |
 | FR-07 | 红灯报警 | P0 | 状态变红（意外停止/阻塞/**CI 失败**）：扬声器警示音（或 TTS 播报"repo-C 阻塞"），事件层弹窗显示阻塞摘要 |
 | FR-09 | 表单补全 | P1 | 权限请求含"需用户输入"字段时，长按 OK 语音输入回填 |
-| FR-10 | 软终端（App 侧） | P2 | 安卓 App 复刻电话簿/权限/来电 UI |
+| FR-10 | 对等软终端（App 侧） | P1 | 安卓 App 复刻电话簿/权限/来电/总览 UI，与板子跑同一套协议、功能对等（详见 5.10 富终端能力） |
 
 ### 5.3 备忘录（录音笔记 + AI 联动）
 
@@ -267,6 +309,19 @@ USB CDC 会话活跃 → USB 路由（最高优先级，一切流量走有线）
 | FR-47 | 面板 3 · PC 资源 | P1 | PC 端 CPU %、内存占用、运行中 Agent 会话数、总机房 uptime。`telemetry` 消息周期推送（USB/WiFi 30s，BLE 2min）；PC 过载（CPU 持续 >90% 或内存告急）时主动告警一次 |
 | FR-48 | 面板 4 · 提交与 CI | P1 | 各仓库最近一次提交（短 sha + 消息摘要 + 是否已推送）与 CI 状态（通过/失败/运行中）。commit 由插件上报；CI 状态由 PC 端查询（GitHub API / gh）。**CI 失败 = 仓库红灯**，走既有报警链路（响铃 + 事件层弹窗） |
 | FR-49 | 卡死检测 | P2 | 总机房综合遥测判断 Agent 卡死（CPU 无变化 + 长时间无输出心跳）→ 标红并来电提醒"疑似卡死，是否重启会话" |
+
+### 5.10 安卓富终端（对等 + 增强）
+
+App 与板子是**协议层面的对等终端**（同一个 Hub 会话的两个客户端，消息扇出、状态一致），在此之上 App 利用手机能力提供板子做不到的增强功能——手机端不被浪费，复杂内容交由手机处理：
+
+| ID | 功能 | 优先级 | 描述 |
+|---|---|---|---|
+| FR-50 | 对等终端 UI | P1 | 电话簿 / 权限问答 / 来电 / 总览驾驶舱 / 备忘录，与板子同构（触摸交互替代三键）；多终端状态同步（板子上批过的，App 里自动消失） |
+| FR-51 | 文本对话（web coding） | P1 | 聊天式界面直接对任意 Agent / 接线员发消息，即一个移动端 coding 客户端：查看回复流、追加指令、粘贴代码/错误信息 |
+| FR-52 | 复杂表单文本输入 | P1 | 板子上需长按 OK 语音补全的输入字段，App 内直接键盘输入（长文本、命令、变量名——语音不适合的场景）；两端同一 ask 双端均可答 |
+| FR-53 | 完整上下文查看 | P1 | 联系人详情在 App 端可展开完整上下文（非摘要）、历史会话记录、diff/文件树浏览（由 Hub 下发，App 渲染）——板子 240×320 只显示摘要的原因在手机上不复存在 |
+| FR-54 | 通知中心 | P2 | App 内聚合：来电记录、报警历史、权限审批历史，支持回查 |
+
 
 ---
 
@@ -402,7 +457,7 @@ USB CDC 会话活跃 → USB 路由（最高优先级，一切流量走有线）
 |---|---|---|
 | M1 骨架版·USB | 板端：手机系统框架（桌面/状态栏/事件层/统一导航）+ 电话簿/问答/来电/报警 UI + USB 传输（TinyUSB 双 CDC）+ 备忘录录音/回放 + 亮度管理 + 总览面板 1（状态/电量/链路）；PC 端：总机房（CDC 入口）+ 插件桥（先接 Claude Code） | 真机演示：插线后电话簿显示真实 Agent 状态，远程批准一次权限，红灯触发响铃，录一条备忘录 |
 | M2 无线+语音 | WiFi 传输、接线员 Agent、对讲通话、STT/多模态、备忘录转写回填与派发、遥测面板（Token/PC 资源/提交与 CI，含 CI 失败报警） | 真机演示："喂，让小张跑测试"全链路闭环；备忘录转写并派发成功；总览四面板数据实时刷新 |
-| M3 户外 | 云中继、安卓伴侣 App（推送 + BLE 网关 + 软终端）、三端联动、离线队列、file 传输（头像/OTA） | 真机演示：带板出门 BLE 收权限并批准；回家自动切直连、手机零推送 |
+| M3 户外+富终端 | 云中继、安卓伴侣 App（推送 + BLE 网关）、对等富终端（FR-50~54，局域网直连形态先行，随后 BLE/中继形态）、三端联动、离线队列、file 传输（头像/OTA） | 真机演示：带板出门 BLE 收权限并批准；回家自动切直连、手机零推送；App 直接文本对话指挥 Agent |
 | M4 LTE 板 | transport_lte、真人联系人（type:human）、语音直拨 | 新板插 SIM 即用，老板子不受影响 |
 
 ---
@@ -422,7 +477,7 @@ USB CDC 会话活跃 → USB 路由（最高优先级，一切流量走有线）
 | R9 | Token 用量数据可得性：各 CLI 暴露 usage 的方式不一（Claude Code hooks 有 usage；部分 CLI 需解析 JSON 输出甚至不可得） | 中 | 插件桥按 CLI 适配，取不到精确值时降级为"会话数/消息数"统计；面板标注数据来源可信度 |
 | Q1 | 接线员模型选型（多模态音频直听 vs STT 两段式）？ | — | M2 前定，接口预留两种 |
 | Q2 | 头像资产：各公司 logo 版权与自定义头像上传方式？ | — | 默认首字母色块头像规避版权，logo 用户自行放入 |
-| Q3 | 多设备同时在线（板 + App 软终端）消息扇出与已读策略？ | — | M3 设计时定，预留 to: device 语义 |
+| Q3 | 多终端同时在线（板 + App）消息扇出与已读策略？ | — | 方向已定：双端对等扇出、同一 ask 先答先得（后答收"已被处理"回执）；细节 M3 设计时定 |
 | Q4 | 云中继自建（frp/WS 中转）还是 Tailscale 组网？ | — | M3 技术选型专题 |
 | Q5 | 备忘录转写的 STT 与接线员是否共用同一模型/供应商？ | — | M2 前定，倾向共用降成本 |
 

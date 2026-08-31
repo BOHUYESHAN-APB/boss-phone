@@ -1,5 +1,7 @@
 # FoloToy AI Passport AI 硬件开发指南
 
+> **路径重排说明（2026-08-31）**：仓库已重排，本指南为上游保留文档，下述路径对应关系为：`components/bsp/` → `firmware/components/bsp/`；`main/`（demo）→ `reference/folotoy-card-demo/main/`；`sdkconfig.defaults` → `firmware/sdkconfig.defaults`。
+
 本文是面向 AI 编程助手和新开发者的板级上下文入口。目标不是替代数据手册，而是准确说明**当前仓库已经确认的硬件事实、软件架构、不可随意改变的约束、扩展方式和验收方法**。
 
 > 信息优先级：实际原理图/PCB 与实机结果 > `components/bsp/include/bsp_pins.h` > BSP 实现与本文件 > README。若几处信息冲突，不要凭经验猜测；应先指出冲突并请求原理图、板卡版本或实测结果。
@@ -57,18 +59,83 @@ LCD RST 和功放 PA 使能均定义为 `-1`：LCD 复位脚未接 MCU，驱动�
 
 ## 4. 软件架构与启动流程
 
-```text
-app_main
-  ├─ bsp_i2c_init → bsp_i2c_scan
-  ├─ bsp_display_init → bsp_lvgl_init → backlight 100%
-  ├─ bsp_button_init(on_key)
-  ├─ bsp_audio_init
-  ├─ bsp_battery_init
-  └─ LVGL menu
-       ├─ Display demo
-       ├─ Button demo
-       ├─ Audio demo
-       └─ Battery demo
+```svg
+<svg viewBox="0 0 780 430" xmlns="http://www.w3.org/2000/svg" font-family="ui-sans-serif,system-ui,Microsoft YaHei,sans-serif" font-size="12">
+  <defs>
+    <marker id="hw-arr" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M0,0 L10,5 L0,10 z" fill="#7c5cfc"/>
+    </marker>
+  </defs>
+  <style>
+    .hbox { fill: #f4f4fa; stroke: #c9c9df; rx: 8; }
+    .hroot { fill: #e7e0fb; stroke: #7c5cfc; stroke-width: 1.5; rx: 10; }
+    .htext { fill: #3a2a7a; }
+    .hsub { fill: #5b5b78; }
+  </style>
+
+  <!-- app_main -->
+  <rect x="30" y="40" width="150" height="46" class="hroot"/>
+  <text x="105" y="68" text-anchor="middle" font-size="14" font-weight="700" class="htext">app_main</text>
+  <line x1="180" y1="63" x2="205" y2="63" stroke="#7c5cfc" stroke-width="1.5"/>
+  <line x1="205" y1="20" x2="205" y2="390" stroke="#7c5cfc" stroke-width="1.5"/>
+
+  <!-- 行 1：i2c -->
+  <line x1="205" y1="50" x2="235" y2="50" stroke="#7c5cfc" stroke-width="1.5"/>
+  <rect x="235" y="35" width="130" height="30" class="hbox"/>
+  <text x="300" y="55" text-anchor="middle" class="htext">bsp_i2c_init</text>
+  <line x1="365" y1="50" x2="402" y2="50" stroke="#7c5cfc" stroke-width="1.5" marker-end="url(#hw-arr)"/>
+  <rect x="405" y="35" width="120" height="30" class="hbox"/>
+  <text x="465" y="55" text-anchor="middle" class="htext">bsp_i2c_scan</text>
+
+  <!-- 行 2：display -->
+  <line x1="205" y1="100" x2="235" y2="100" stroke="#7c5cfc" stroke-width="1.5"/>
+  <rect x="235" y="85" width="155" height="30" class="hbox"/>
+  <text x="312" y="105" text-anchor="middle" class="htext">bsp_display_init</text>
+  <line x1="390" y1="100" x2="427" y2="100" stroke="#7c5cfc" stroke-width="1.5" marker-end="url(#hw-arr)"/>
+  <rect x="430" y="85" width="115" height="30" class="hbox"/>
+  <text x="487" y="105" text-anchor="middle" class="htext">bsp_lvgl_init</text>
+  <line x1="545" y1="100" x2="582" y2="100" stroke="#7c5cfc" stroke-width="1.5" marker-end="url(#hw-arr)"/>
+  <rect x="585" y="85" width="130" height="30" class="hbox"/>
+  <text x="650" y="105" text-anchor="middle" class="htext">backlight 100%</text>
+
+  <!-- 行 3：button -->
+  <line x1="205" y1="150" x2="235" y2="150" stroke="#7c5cfc" stroke-width="1.5"/>
+  <rect x="235" y="135" width="190" height="30" class="hbox"/>
+  <text x="330" y="155" text-anchor="middle" class="htext">bsp_button_init(on_key)</text>
+
+  <!-- 行 4：audio -->
+  <line x1="205" y1="200" x2="235" y2="200" stroke="#7c5cfc" stroke-width="1.5"/>
+  <rect x="235" y="185" width="145" height="30" class="hbox"/>
+  <text x="307" y="205" text-anchor="middle" class="htext">bsp_audio_init</text>
+
+  <!-- 行 5：battery -->
+  <line x1="205" y1="250" x2="235" y2="250" stroke="#7c5cfc" stroke-width="1.5"/>
+  <rect x="235" y="235" width="155" height="30" class="hbox"/>
+  <text x="312" y="255" text-anchor="middle" class="htext">bsp_battery_init</text>
+
+  <!-- 行 6：LVGL menu + 子项 -->
+  <line x1="205" y1="330" x2="235" y2="330" stroke="#7c5cfc" stroke-width="1.5"/>
+  <rect x="235" y="315" width="135" height="30" class="hbox"/>
+  <text x="302" y="335" text-anchor="middle" class="htext">LVGL menu</text>
+  <line x1="370" y1="330" x2="400" y2="330" stroke="#7c5cfc" stroke-width="1.5"/>
+  <line x1="400" y1="285" x2="400" y2="405" stroke="#7c5cfc" stroke-width="1.5"/>
+
+  <line x1="400" y1="300" x2="430" y2="300" stroke="#7c5cfc" stroke-width="1.5"/>
+  <rect x="430" y="285" width="130" height="30" class="hbox"/>
+  <text x="495" y="305" text-anchor="middle" class="hsub">Display demo</text>
+
+  <line x1="400" y1="330" x2="430" y2="330" stroke="#7c5cfc" stroke-width="1.5"/>
+  <rect x="430" y="315" width="130" height="30" class="hbox"/>
+  <text x="495" y="335" text-anchor="middle" class="hsub">Button demo</text>
+
+  <line x1="400" y1="360" x2="430" y2="360" stroke="#7c5cfc" stroke-width="1.5"/>
+  <rect x="430" y="345" width="130" height="30" class="hbox"/>
+  <text x="495" y="365" text-anchor="middle" class="hsub">Audio demo</text>
+
+  <line x1="400" y1="390" x2="430" y2="390" stroke="#7c5cfc" stroke-width="1.5"/>
+  <rect x="430" y="375" width="130" height="30" class="hbox"/>
+  <text x="495" y="395" text-anchor="middle" class="hsub">Battery demo</text>
+</svg>
 ```
 
 显示是 UI 的硬依赖，显示或 LVGL 初始化失败时 `app_main` 直接返回。按键、音频、电池是软依赖：初始化失败的菜单项显示 `[FAIL]`，其他页面仍可用。

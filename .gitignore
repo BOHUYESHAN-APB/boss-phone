@@ -17,5 +17,6 @@ hub/.venv/
 
 # 生成/评测产物（脚本保留，产物不提交）
 tools/stt-samples/out/
+tools/stt-validate/models/
 tools/pdf-export/_out/
 node_modules/

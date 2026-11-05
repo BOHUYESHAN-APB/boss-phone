@@ -1,0 +1,82 @@
+# Dependabot：依赖更新（每周一次，统一周一 09:00 Asia/Shanghai）
+# 生态目录与仓库真实布局对应：
+#   pip             /hub                  hub 的 Python 运行/开发依赖
+#   npm             /tools/pdf-export     PDF 导出工具（markdown-it / mermaid / puppeteer-core）
+#   cargo           /                     根 Cargo workspace（protocol/rust + tools/stt-validate）
+#   github-actions  /                     .github/workflows 中的 action 版本
+# 说明：只使用 GitHub 自动创建的 dependencies 标签，避免引用仓库中不存在的标签；
+#       各生态的区分靠 commit-message 前缀与分组名。
+version: 2
+updates:
+  # ---- Python：hub ----
+  - package-ecosystem: pip
+    directory: "/hub"
+    schedule:
+      interval: weekly
+      day: monday
+      time: "09:00"
+      timezone: Asia/Shanghai
+    open-pull-requests-limit: 5
+    labels:
+      - dependencies
+    commit-message:
+      prefix: "chore(deps)"
+    groups:
+      python-minor-patch:
+        patterns: ["*"]
+        update-types: ["minor", "patch"]
+
+  # ---- Node：tools/pdf-export ----
+  - package-ecosystem: npm
+    directory: "/tools/pdf-export"
+    schedule:
+      interval: weekly
+      day: monday
+      time: "09:00"
+      timezone: Asia/Shanghai
+    open-pull-requests-limit: 5
+    labels:
+      - dependencies
+    commit-message:
+      prefix: "chore(deps)"
+    groups:
+      npm-minor-patch:
+        patterns: ["*"]
+        update-types: ["minor", "patch"]
+
+  # ---- Rust：根 workspace（protocol/rust + tools/stt-validate）----
+  # Cargo.lock 已入库（可复现构建）；cargo 的 directory 必须是 workspace 根。
+  - package-ecosystem: cargo
+    directory: "/"
+    schedule:
+      interval: weekly
+      day: monday
+      time: "09:00"
+      timezone: Asia/Shanghai
+    open-pull-requests-limit: 5
+    labels:
+      - dependencies
+    commit-message:
+      prefix: "chore(deps)"
+    groups:
+      cargo-minor-patch:
+        patterns: ["*"]
+        update-types: ["minor", "patch"]
+
+  # ---- GitHub Actions：.github/workflows/ci.yml ----
+  - package-ecosystem: github-actions
+    directory: "/"
+    schedule:
+      interval: weekly
+      day: monday
+      time: "09:00"
+      timezone: Asia/Shanghai
+    open-pull-requests-limit: 5
+    labels:
+      - dependencies
+    commit-message:
+      prefix: "chore(ci)"
+    groups:
+      actions-minor-patch:
+        patterns: ["*"]
+        update-types: ["minor", "patch"]

@@ -1,0 +1,81 @@
+name: 功能建议
+description: 提出新功能、改进现有行为或新的使用场景
+title: "feat: "
+labels: ["enhancement"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        提出前请先读 `docs/BOSS_PHONE_PRD.md` 与 `docs/BOSS_PHONE_DESIGN_OVERVIEW.md`，
+        确认功能不在既有里程碑规划内（或说明为何应调整规划）。
+
+  - type: dropdown
+    id: component
+    attributes:
+      label: 期望落在哪个模块
+      options:
+        - firmware（BSP / 固件入口 / UI 状态机）
+        - hub（gateway / core / operator / 语音输入法）
+        - protocol（Schema 与四端绑定）
+        - 插件桥 / CLI Agent 集成
+        - tools（协议生成器 / STT 评测 / PDF 导出）
+        - docs / CI / 仓库基建
+        - 其他
+    validations:
+      required: true
+
+  - type: textarea
+    id: problem
+    attributes:
+      label: 要解决的问题
+      description: 描述当前的痛点或受限场景，而不是直接给方案
+      placeholder: "例如：在会议场景下，长按 OK 录音会打断正在播放的来电提示音……"
+    validations:
+      required: true
+
+  - type: textarea
+    id: proposal
+    attributes:
+      label: 期望的方案
+      description: 你设想的交互或实现；如果涉及硬件（引脚/外设）或协议字段变更请说明
+    validations:
+      required: true
+
+  - type: textarea
+    id: alternatives
+    attributes:
+      label: 考虑过的替代方案
+      description: 是否可以用现有能力绕过；有无更小的改动面
+    validations:
+      required: false
+
+  - type: dropdown
+    id: milestone
+    attributes:
+      label: 关联里程碑（可选）
+      description: 参考 docs/BOSS_PHONE_DESIGN_TEST.md 的 M1–M4 划分
+      options:
+        - 不确定
+        - M0（PC 侧全链路 / 无板）
+        - M1（骨架版·USB）
+        - M2（无线 + 语音）
+        - M3（户外 + 富终端）
+        - M4（LTE 板）
+    validations:
+      required: false
+
+  - type: textarea
+    id: impact
+    attributes:
+      label: 影响面
+      description: 是否涉及协议变更（需四端重新生成）、引脚/硬件改动、或向后兼容性
+    validations:
+      required: false
+
+  - type: checkboxes
+    id: confirm
+    attributes:
+      label: 提交前确认
+      options:
+        - label: 我已搜索过现有 issue 与设计文档，确认这不是重复建议
+          required: true

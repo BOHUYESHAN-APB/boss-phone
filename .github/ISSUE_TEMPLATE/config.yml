@@ -1,0 +1,13 @@
+# Issue 模板配置
+# blank_issues_enabled=false：强制走结构化表单，避免"一句话 issue"缺关键信息。
+blank_issues_enabled: false
+contact_links:
+  - name: 设计文档与使用说明
+    url: https://github.com/BOHUYESHAN-APB/boss-phone/blob/main/docs/BOSS_PHONE_DESIGN_OVERVIEW.md
+    about: 先看总体设计 / 协议 / 固件 / Hub 分册与 README 快速开始，多数使用问题这里已有答案。
+  - name: 提问与讨论（Discussions）
+    url: https://github.com/BOHUYESHAN-APB/boss-phone/discussions
+    about: 使用疑问、方案讨论、展示你的插件与场景，请走 Discussions，不要开 issue。
+  - name: 安全漏洞
+    url: https://github.com/BOHUYESHAN-APB/boss-phone/security/advisories/new
+    about: 请勿公开提交安全漏洞；使用 GitHub Security Advisory 私密报告，详见 SECURITY.md。

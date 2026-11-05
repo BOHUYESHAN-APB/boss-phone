@@ -1,0 +1,61 @@
+# BOSS PHONE monorepo 编辑器统一配置
+# 与 .gitattributes 保持同一套换行策略：文本 LF，Windows 脚本 CRLF。
+# VS Code / CLion / IDEA / Visual Studio 均原生支持 EditorConfig。
+root = true
+
+[*]
+charset = utf-8
+end_of_line = lf
+insert_final_newline = true
+trim_trailing_whitespace = true
+indent_style = space
+indent_size = 4
+
+# ---- C：固件（firmware/、reference/）与共享 BSP ----
+# AGENTS.md 约定：四空格缩进 + K&R 大括号，跟随邻近文件。
+[*.{c,h}]
+indent_style = space
+indent_size = 4
+
+# ---- Python（hub/、tools/gen-protocol/vectors.py）----
+# 缩进 4 空格；格式化交给 ruff format（规则见 hub/pyproject.toml 的 [tool.ruff]）。
+[*.py]
+indent_style = space
+indent_size = 4
+
+# ---- JS / JSON / YAML：2 空格（生成器、schema、CI 工作流）----
+[*.{js,mjs,cjs,json,yml,yaml}]
+indent_style = space
+indent_size = 2
+
+# ---- TOML / CMake：4 空格（Cargo / pyproject / ESP-IDF 工程）----
+[*.toml]
+indent_style = space
+indent_size = 4
+
+[CMakeLists.txt]
+indent_style = space
+indent_size = 4
+
+[*.cmake]
+indent_style = space
+indent_size = 4
+
+# ---- Markdown：保留行尾空格（Markdown 硬换行 = 行尾两个空格）----
+[*.{md,markdown}]
+trim_trailing_whitespace = false
+
+# ---- Windows 脚本：CRLF（与 .gitattributes 对齐）----
+[*.{ps1,psm1,psd1}]
+end_of_line = crlf
+indent_style = space
+indent_size = 4
+
+[*.{bat,cmd}]
+end_of_line = crlf
+
+# ---- Shell 脚本 ----
+[*.sh]
+end_of_line = lf
+indent_style = space
+indent_size = 2

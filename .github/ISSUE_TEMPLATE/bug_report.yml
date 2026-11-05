@@ -1,0 +1,120 @@
+name: Bug 报告
+description: 报告可复现的缺陷（固件 / hub / 协议 / 工具链）
+title: "bug: "
+labels: ["bug"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        感谢反馈！请先确认这不是**已知限制**（见 `CHANGELOG.md` 的「已知限制」与 `docs/BOSS_PHONE_DESIGN_TEST.md`）。
+        安全类问题**不要**在这里开 issue，请按 `SECURITY.md` 私密报告。
+
+  - type: dropdown
+    id: component
+    attributes:
+      label: 受影响组件
+      description: 选择最接近的一项
+      options:
+        - firmware（BSP / 固件入口）
+        - reference/folotoy-card-demo（上游基线 demo）
+        - hub（gateway / core / operator / 语音输入法）
+        - protocol（Schema / 四端生成物 / 黄金向量）
+        - tools（协议生成器 / STT 评测 / PDF 导出）
+        - docs / CI / 仓库基建
+        - 不确定
+    validations:
+      required: true
+
+  - type: input
+    id: version
+    attributes:
+      label: 版本 / commit
+      description: 出问题的 commit SHA、tag（如 v0.1.0）或分支名
+      placeholder: "例如：main@b137567 或 v0.1.0"
+    validations:
+      required: true
+
+  - type: input
+    id: firmware_version
+    attributes:
+      label: 固件版本（固件问题必填）
+      description: 板上运行的固件版本或构建标识（hello 报文的 fw 字段 / 构建时间 / commit）
+      placeholder: "例如：fw 0.1.0（main@b137567）"
+    validations:
+      required: false
+
+  - type: input
+    id: hardware
+    attributes:
+      label: 硬件与批次（固件问题必填）
+      description: 板子型号 / 硬件修订版 / 供电方式
+      placeholder: "例如：FoloToy AI Passport rev-B，USB 供电"
+    validations:
+      required: false
+
+  - type: input
+    id: toolchain
+    attributes:
+      label: 工具链版本
+      description: ESP-IDF / Python / Node / Rust 中与问题相关的一项或多项
+      placeholder: "例如：ESP-IDF v5.5.3 / Python 3.11.9"
+    validations:
+      required: false
+
+  - type: textarea
+    id: steps
+    attributes:
+      label: 复现步骤
+      description: 从干净状态开始的最小步骤；涉及真实硬件时注明按键与屏幕操作顺序
+      placeholder: |
+        1. cd hub && .venv\Scripts\activate
+        2. python -m hub serve
+        3. ...
+        4. 观察到的现象
+    validations:
+      required: true
+
+  - type: textarea
+    id: expected
+    attributes:
+      label: 期望行为
+      description: 你认为正确的表现是什么
+    validations:
+      required: true
+
+  - type: textarea
+    id: actual
+    attributes:
+      label: 实际行为
+      description: 实际现象；如果是显示/音频问题，请描述具体表现
+    validations:
+      required: true
+
+  - type: textarea
+    id: logs
+    attributes:
+      label: 日志 / 截图 / 波形
+      description: |
+        相关日志片段、串口输出、截图或音频文件（录音请先自行脱敏，勿上传真实私人语音）。
+        长日志可粘贴为代码块或附件。
+      render: shell
+    validations:
+      required: false
+
+  - type: textarea
+    id: extra
+    attributes:
+      label: 其他补充
+      description: 已尝试的排查、是否可稳定复现、是否在特定环境才出现
+    validations:
+      required: false
+
+  - type: checkboxes
+    id: confirm
+    attributes:
+      label: 提交前确认
+      options:
+        - label: 我已搜索过现有 issue，确认不是重复问题
+          required: true
+        - label: 我确认这不是安全漏洞（安全漏洞请按 SECURITY.md 私密报告）
+          required: true

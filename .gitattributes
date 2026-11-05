@@ -1,0 +1,48 @@
+# BOSS PHONE monorepo 换行 / 二进制 / linguist 规则
+#
+# 统一策略：文本文件一律 LF 入库（跨 Windows / macOS / Linux / CI 一致），
+# Windows 专属脚本（PowerShell / 批处理）跟随 Windows 惯例用 CRLF。
+# 与 .editorconfig 保持一致；本地 git 的 core.autocrlf 不影响本文件。
+
+* text=auto eol=lf
+
+# ---- Windows 脚本：CRLF（PowerShell 5.1 对 LF 脚本的解析有坑）----
+*.ps1  text eol=crlf
+*.psm1 text eol=crlf
+*.psd1 text eol=crlf
+*.bat  text eol=crlf
+*.cmd  text eol=crlf
+
+# ---- Shell 脚本：强制 LF，否则 Linux/CI 上执行报 bad interpreter ----
+*.sh   text eol=lf
+
+# ---- 二进制：不做换行转换，也不参与文本 diff / 语言统计 ----
+*.pdf  binary
+*.png  binary
+*.jpg  binary
+*.jpeg binary
+*.gif  binary
+*.ico  binary
+*.wav  binary
+*.mp3  binary
+*.opus binary
+*.bin  binary
+*.elf  binary
+*.img  binary
+
+# 设计文档集 PDF（3.2MB，入库二进制；显式固定，防止将来有人改成文本 diff）
+docs/pdf/*.pdf binary
+
+# ---- 协议生成物：由 tools/gen-protocol 生成，GitHub 上折叠 diff 并标 generated ----
+# 真实路径见 tools/gen-protocol/generate.mjs 的输出清单；四端产物必须与 schema 同步提交。
+protocol/c/boss_protocol.h        linguist-generated=true
+protocol/kotlin/BossProtocol.kt   linguist-generated=true
+protocol/python/boss_protocol.py  linguist-generated=true
+protocol/rust/src/messages.rs     linguist-generated=true
+protocol/vectors/golden.json      linguist-generated=true
+
+# ---- 上游基线 demo：只读参考，不算本仓自研代码 ----
+reference/folotoy-card-demo/** linguist-vendored
+
+# ---- 设计文档：不参与代码语言统计 ----
+docs/**/*.md linguist-documentation

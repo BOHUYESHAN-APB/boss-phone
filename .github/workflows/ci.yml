@@ -26,7 +26,7 @@ jobs:
           node-version: 20
       - name: 生成产物与 schema 同步校验
         run: node tools/gen-protocol/generate.mjs --check
-      - uses: actions/setup-python@v5
+      - uses: actions/setup-python@v7
         with:
           python-version: "3.11"
       - name: 黄金向量 wire_hex 与信封定义同步校验
@@ -43,7 +43,7 @@ jobs:
         working-directory: hub
     steps:
       - uses: actions/checkout@v7
-      - uses: actions/setup-python@v5
+      - uses: actions/setup-python@v7
         with:
           python-version: "3.11"
       - name: 安装依赖

@@ -1,10 +1,12 @@
 dependencies:
+  # 依赖版本精确锁定（对齐上游 reference demo 的 dependencies.lock 解析结果）。
+  # 关键约束：lvgl 必须锁在 9.5.0。lvgl 9.6.0 起在组件清单里声明了
+  # `$CONFIG{LV_USE_FREETYPE}` / `$CONFIG{LV_USE_LIBPNG}` 这类条件依赖，
+  # 而 idf-component-manager 在求解依赖阶段还读不到 lvgl 自己的 Kconfig，
+  # 会直接抛 MissingKconfigError: LV_USE_FREETYPE（2026-11 CI 实际失败原因）。
+  # 升级 lvgl 前请先在 CI 上验证该问题已在上游修复。
   idf: ">=5.5.0"
-  # 固定到 9.5.x 而不是 "^9.5.0"：lvgl 9.6.0 起在清单里用
-  # `$CONFIG{LV_USE_FREETYPE}` 之类的条件依赖，而 idf-component-manager 在求解
-  # 依赖阶段还读不到 lvgl 自己的 Kconfig，会抛 MissingKconfigError: LV_USE_FREETYPE
-  # （2026-11 CI 实际失败原因）。升级到 9.6 前需先验证该问题已在上游修复。
-  lvgl/lvgl: "~9.5.0"
-  espressif/esp_lvgl_port: "*"
-  espressif/button: "*"
-  espressif/esp_codec_dev: "*"
+  lvgl/lvgl: "9.5.0"
+  espressif/esp_lvgl_port: "2.9.0"
+  espressif/button: "4.2.0"
+  espressif/esp_codec_dev: "1.6.2"

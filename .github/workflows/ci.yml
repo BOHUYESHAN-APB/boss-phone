@@ -1,8 +1,12 @@
-# BOSS PHONE monorepo CI
-# - protocol: 协议 SSOT 产物与 schema 同步校验（tools/gen-protocol --check）
-# - hub:      Python hub 编译 + 逻辑测试（Linux 上验证：纠错/帧/编排）
-# - firmware: ESP-IDF（RTOS）编译——构建 reference/folotoy-card-demo（复用共享 BSP）；
+# BOSS PHONE monorepo CI（测试分层见 DESIGN_TEST / 对话定稿的 L1-L5）
+# - protocol: 协议 SSOT 产物同步（generate --check）+ 黄金向量同步（vectors --check）
+#             + Rust 绑定语义校验（golden vectors roundtrip）——L2
+# - hub:      Python hub 编译 + ruff lint/format + L1 单元测试（纠错/帧/session/eventbus）
+#             + L2 黄金向量字节级校验 + L3 WS 集成测试（虚拟设备全链路）
+# - firmware: ESP-IDF（RTOS）编译门禁——构建 reference/folotoy-card-demo（复用共享 BSP）；
 #             firmware/main（boss_app）落地后改为构建 firmware/
+# 注：L5 真机验收（屏幕/按键/音频）与 STT 准确率评测不进 CI——
+#     前者依赖硬件人工核对，后者数字波动只出报告不做门禁。
 # 注：windows-native STT 与光标注入是 Windows 专属，CI 不跑（Linux 上可跳过）。
 name: CI
 
@@ -13,15 +17,23 @@ on:
 
 jobs:
   protocol:
-    name: Protocol SSOT
+    name: Protocol SSOT + Golden Vectors
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
         with:
           node-version: 20
-      - name: 产物与 schema 同步校验
+      - name: 生成产物与 schema 同步校验
         run: node tools/gen-protocol/generate.mjs --check
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: 黄金向量 wire_hex 与信封定义同步校验
+        run: python tools/gen-protocol/vectors.py --check
+      - uses: dtolnay/rust-toolchain@stable
+      - name: Rust 协议绑定语义校验（golden vectors roundtrip）
+        run: cargo test -p boss-protocol --quiet
 
   hub:
     name: Hub (Python)
@@ -37,10 +49,14 @@ jobs:
       - name: 安装依赖
         run: |
           python -m pip install --upgrade pip
-          pip install -r requirements.txt pytest
+          pip install -r requirements.txt -r requirements-dev.txt
       - name: 编译校验
-        run: python -m compileall -q .
-      - name: 逻辑测试（词表纠错 / 帧解析 / 语音输入编排）
+        run: python -m compileall -q hub tests
+      - name: Lint（ruff check，规则见 hub/pyproject.toml）
+        run: python -m ruff check hub tests --output-format=concise
+      - name: 格式校验（ruff format --check）
+        run: python -m ruff format --check hub tests
+      - name: L1 单元 + L2 黄金向量 + L3 集成测试
         run: python -m pytest tests -q
 
   firmware:

@@ -20,7 +20,7 @@ jobs:
     name: Protocol SSOT + Golden Vectors
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
       - uses: actions/setup-node@v4
         with:
           node-version: 20
@@ -42,7 +42,7 @@ jobs:
       run:
         working-directory: hub
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
       - uses: actions/setup-python@v5
         with:
           python-version: "3.11"
@@ -63,7 +63,7 @@ jobs:
     name: Firmware (ESP-IDF/FreeRTOS)
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
       # 依赖求解的两个坑（2026-11 实测，日志见 CI 历史）：
       # 1) 仓库提交了 reference/folotoy-card-demo/dependencies.lock，其 manifest_hash
       #    与 firmware/components/bsp/idf_component.yml 的依赖字段配套；改版本会失配 →

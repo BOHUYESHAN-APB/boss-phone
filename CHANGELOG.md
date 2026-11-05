@@ -37,6 +37,16 @@
 
 - 协议生成物与 schema 不同步的问题由 CI `--check` 永久拦截（禁止手改生成物）。
 - hub 测试与语音输入法链路的路径/编码问题修正（WAV 输入读取、Windows 控制台输出）。
+- **Windows 控制台编码**：`hub-lite.py` / `python -m hub` / `tools/gen-protocol/vectors.py`
+  入口统一把 stdout/stderr 切到 UTF-8，GBK(cp936) 控制台下不再因中文与 `✓` 抛 `UnicodeEncodeError`。
+- **hub 心跳边界测试的浮点误差**：`test_is_stale_threshold` 用 `monotonic()` 小数尾数构造 60s
+  边界会出现 `60.00000000000001`，CI 上偶发失败；改用整数值构造边界。`DeviceSession.is_stale()`
+  的 `now` 参数同步改为 `is None` 判断（原写法会把合法的 `0.0` 当作未传参）。
+- **CI 固件 job 的组件依赖求解崩溃**（`MissingKconfigError: LV_USE_FREETYPE`）：lvgl 9.6.0 起在组件
+  清单声明 `$CONFIG{LV_USE_FREETYPE}` 条件依赖，而 idf-component-manager 会在"检查组件新版本"时
+  完整重解依赖图，此时 lvgl 的 Kconfig 尚未生成。处理方式：提交 `dependencies.lock`
+  （与 `firmware/components/bsp/idf_component.yml` 的 `manifest_hash` 配套）+ CI 设
+  `IDF_COMPONENT_CHECK_NEW_VERSION=0`。详见 `.github/workflows/ci.yml` firmware job 注释。
 
 ### 安全
 

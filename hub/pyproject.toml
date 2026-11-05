@@ -17,10 +17,35 @@ dependencies = [
 
 [project.optional-dependencies]
 stt-whisper = ["faster-whisper>=1.0"]   # 本地 whisper 引擎（CTranslate2 后端）
-dev = ["pytest>=8"]
+dev = ["pytest>=8", "jsonschema>=4", "ruff>=0.6"]
 
 [project.scripts]
 boss-hub = "hub.cli:main"
 
 [tool.setuptools.packages.find]
 include = ["hub*"]
+
+# ---------- 代码规范（CI 与本地共用同一份规则） ----------
+[tool.ruff]
+target-version = "py311"
+line-length = 100
+extend-exclude = [".venv", "build", "models"]
+
+[tool.ruff.lint]
+select = [
+    "E",     # pycodestyle 错误
+    "F",     # pyflakes
+    "I",     # isort：import 排序
+    "UP",    # pyupgrade：现代语法
+    "B",     # bugbear：常见陷阱
+    "PLW1510",  # subprocess.run 必须显式 check
+]
+ignore = [
+    "E501",  # 行宽交给 formatter，不因长中文注释报错
+]
+
+[tool.ruff.lint.per-file-ignores]
+"tests/*" = ["B011"]        # 测试里 assert False 是合法的失败写法
+
+[tool.ruff.format]
+quote-style = "double"

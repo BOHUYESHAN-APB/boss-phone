@@ -12,18 +12,18 @@ from pathlib import Path
 
 @dataclass
 class SerialCfg:
-    port: str = ""          # 板子 CDC1 串口；留空则纯 WS 模式
-    baud: int = 115200      # CDC 虚拟串口波特率（可任意，常为 115200）
+    port: str = ""  # 板子 CDC1 串口；留空则纯 WS 模式
+    baud: int = 115200  # CDC 虚拟串口波特率（可任意，常为 115200）
 
 
 @dataclass
 class WsCfg:
     listen: str = "0.0.0.0:8765"  # 局域网 WebSocket 入口
-    token: str = "change-me"      # 设备/插件连接鉴权
+    token: str = "change-me"  # 设备/插件连接鉴权
 
 
 @dataclass
-class RelayCfg:                   # 阶段 3
+class RelayCfg:  # 阶段 3
     enabled: bool = False
     server: str = "wss://relay.example.com"
     token: str = ""
@@ -31,10 +31,10 @@ class RelayCfg:                   # 阶段 3
 
 @dataclass
 class OperatorCfg:
-    provider: str = "openai"      # 或 deepseek/qwen...；多模态直听或两段式
+    provider: str = "openai"  # 或 deepseek/qwen...；多模态直听或两段式
     model: str = "gpt-4o-audio-preview"
     api_key: str = ""
-    stt_engine: str = "windows"   # windows | whisper | cloud
+    stt_engine: str = "windows"  # windows | whisper | cloud
 
 
 @dataclass
@@ -45,12 +45,12 @@ class TelemetryCfg:
 
 
 @dataclass
-class DictationCfg:                       # 语音输入法（DESIGN_OVERVIEW §8.6）
-    inject: str = "auto"                 # type | paste | auto（文字落到光标处）
-    paste_threshold: int = 200           # auto：超过该长度走剪贴板粘贴
-    correct: bool = True                 # 词表纠错层开关（度量收益用）
-    terms_file: str = ""                 # 用户词表 JSON（热更新，不烧固件）
-    hotwords: str = ""                   # 热词（逗号分隔，注入 STT initial_prompt）
+class DictationCfg:  # 语音输入法（DESIGN_OVERVIEW §8.6）
+    inject: str = "auto"  # type | paste | auto（文字落到光标处）
+    paste_threshold: int = 200  # auto：超过该长度走剪贴板粘贴
+    correct: bool = True  # 词表纠错层开关（度量收益用）
+    terms_file: str = ""  # 用户词表 JSON（热更新，不烧固件）
+    hotwords: str = ""  # 热词（逗号分隔，注入 STT initial_prompt）
 
 
 @dataclass

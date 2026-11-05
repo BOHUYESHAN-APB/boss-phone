@@ -49,7 +49,9 @@ async def _ws_handler(websocket, bus: EventBus, registry: DeviceRegistry) -> Non
     finally:
         if session is not None and registry.get(session.device_id) is session:
             registry.remove(session.device_id)
-            await bus.publish("device.left", {"device_id": session.device_id, "reason": "ws-closed"})
+            await bus.publish(
+                "device.left", {"device_id": session.device_id, "reason": "ws-closed"}
+            )
 
 
 def _ws_send(websocket):

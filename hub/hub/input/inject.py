@@ -112,9 +112,17 @@ def _clipboard_get() -> str | None:
     """读取当前剪贴板文本（用于注入后恢复）；空剪贴板返回 None。"""
     try:
         out = subprocess.run(
-            ["powershell", "-NoProfile", "-NonInteractive", "-Command",
-             "Get-Clipboard -Raw -ErrorAction SilentlyContinue"],
-            capture_output=True, text=True, timeout=10,
+            [
+                "powershell",
+                "-NoProfile",
+                "-NonInteractive",
+                "-Command",
+                "Get-Clipboard -Raw -ErrorAction SilentlyContinue",
+            ],
+            capture_output=True,
+            text=True,
+            timeout=10,
+            check=False,
         )
     except (subprocess.SubprocessError, FileNotFoundError) as exc:
         raise InjectError(f"读取剪贴板失败: {exc}") from exc
@@ -130,7 +138,9 @@ def _clipboard_set(text: str) -> None:
     try:
         subprocess.run(
             ["powershell", "-NoProfile", "-NonInteractive", "-Command", cmd],
-            check=True, capture_output=True, timeout=10,
+            check=True,
+            capture_output=True,
+            timeout=10,
         )
     finally:
         tmp.unlink(missing_ok=True)

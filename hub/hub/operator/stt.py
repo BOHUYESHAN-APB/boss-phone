@@ -25,9 +25,9 @@ class SttError(RuntimeError):
 
 
 class EngineKind:
-    WINDOWS = "windows"    # Windows 自带（System.Speech，PowerShell 子进程，零依赖）
-    WHISPER = "whisper"    # faster-whisper 本地（需模型文件）
-    CLOUD = "cloud"        # 云 API（M0 暂为 stub）
+    WINDOWS = "windows"  # Windows 自带（System.Speech，PowerShell 子进程，零依赖）
+    WHISPER = "whisper"  # faster-whisper 本地（需模型文件）
+    CLOUD = "cloud"  # 云 API（M0 暂为 stub）
 
 
 class SttEngine(ABC):
@@ -84,13 +84,19 @@ Write-Output ($texts -join '')
             proc = subprocess.run(
                 [
                     "powershell",
-                    "-NoProfile", "-NonInteractive", "-ExecutionPolicy", "Bypass",
-                    "-File", str(ps1_path), str(wav_path),
+                    "-NoProfile",
+                    "-NonInteractive",
+                    "-ExecutionPolicy",
+                    "Bypass",
+                    "-File",
+                    str(ps1_path),
+                    str(wav_path),
                 ],
                 capture_output=True,
                 text=True,
                 env=env,
                 timeout=self.timeout_secs + 30,
+                check=False,
             )
         except FileNotFoundError as exc:
             raise SttError("未找到 powershell，windows-native 引擎需要 Windows") from exc

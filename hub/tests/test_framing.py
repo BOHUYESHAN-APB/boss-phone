@@ -1,4 +1,5 @@
 """hub 逻辑测试：帧编解码 / 流式分帧 / 握手（DESIGN_PROTOCOL §2/§4）。"""
+
 import asyncio
 
 from hub.core.eventbus import EventBus
@@ -8,15 +9,26 @@ from hub.gateway.handler import handle_control
 
 
 def _hello(**over):
-    p = {"proto": 1, "device": "passport:aa:bb", "fw": "0.1.0", "caps": ["voice.stt"], "resume_seq": 5}
+    p = {
+        "proto": 1,
+        "device": "passport:aa:bb",
+        "fw": "0.1.0",
+        "caps": ["voice.stt"],
+        "resume_seq": 5,
+    }
     p.update(over)
     return make_envelope("hello", "device", 0, p)
 
 
 def test_mixed_stream_parse():
     """hello 控制帧 + voice 媒体帧 + 普通控制帧 混排解析。"""
-    stream = encode_control(_hello()) + encode_media(1, 3, b"\x00" * 100) \
-        + encode_control(make_envelope("presence", "hub", 1, {"agent_id": "repo-b", "state": "running"}))
+    stream = (
+        encode_control(_hello())
+        + encode_media(1, 3, b"\x00" * 100)
+        + encode_control(
+            make_envelope("presence", "hub", 1, {"agent_id": "repo-b", "state": "running"})
+        )
+    )
     frames = FrameParser().feed(stream)
     assert frames[0][0] == "control" and frames[0][1]["payload"]["device"] == "passport:aa:bb"
     assert frames[1][0] == "media" and frames[1][1].type_name == "voice"
@@ -56,13 +68,19 @@ def test_hello_handshake_and_unauthenticated_block():
         assert sent[0]["type"] == "hello_ack"
         assert sent[0]["payload"]["device_id"] == "passport:aa:bb"
 
-        s2 = await handle_control(bus, reg, s,
-                                  make_envelope("presence", "hub", 1, {"state": "running"}),
-                                  link="cdc", send=send)
+        s2 = await handle_control(
+            bus,
+            reg,
+            s,
+            make_envelope("presence", "hub", 1, {"state": "running"}),
+            link="cdc",
+            send=send,
+        )
         assert s2 is s
 
-        s3 = await handle_control(bus, reg, None,
-                                  make_envelope("state", "hub", 1, {}), link="ws", send=send)
+        s3 = await handle_control(
+            bus, reg, None, make_envelope("state", "hub", 1, {}), link="ws", send=send
+        )
         assert s3 is None  # 未握手 → 4003 拦截
 
     asyncio.run(run())

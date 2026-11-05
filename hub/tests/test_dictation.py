@@ -2,6 +2,7 @@
 
 用 fake 引擎，不依赖真实 STT/Windows 注入；CI（Linux）可跑。
 """
+
 from hub.dictation import DictationOptions, DictationService
 from hub.operator.correct import TextCorrector
 from hub.operator.stt import SttEngine
@@ -25,7 +26,8 @@ class _EmptyEngine(SttEngine):
 
 def test_dictation_correct_without_inject():
     svc = DictationService(
-        _FakeEngine(), corrector=TextCorrector(),
+        _FakeEngine(),
+        corrector=TextCorrector(),
         options=DictationOptions(inject="auto", correct=True),
     )
     res = svc.run([0] * 16000, inject=False)
@@ -41,7 +43,8 @@ def test_empty_transcription_not_injected():
 
 def test_correction_can_be_disabled():
     svc = DictationService(
-        _FakeEngine(), corrector=TextCorrector(),
+        _FakeEngine(),
+        corrector=TextCorrector(),
         options=DictationOptions(correct=False),
     )
     res = svc.run([0] * 16000, inject=False)

@@ -21,18 +21,18 @@ from hub.operator.stt import SttEngine
 
 
 class DictationResult(NamedTuple):
-    raw: str          # STT 原始转写
-    corrected: str    # 词表纠错后
-    injected: bool    # 是否成功注入光标处
-    method: str       # 实际注入方式（type / paste / ""）
-    elapsed: float    # 转写耗时（秒）
+    raw: str  # STT 原始转写
+    corrected: str  # 词表纠错后
+    injected: bool  # 是否成功注入光标处
+    method: str  # 实际注入方式（type / paste / ""）
+    elapsed: float  # 转写耗时（秒）
 
 
 @dataclass
 class DictationOptions:
-    inject: str = "auto"       # type | paste | auto（见 input/inject）
+    inject: str = "auto"  # type | paste | auto（见 input/inject）
     paste_threshold: int = 200  # auto：超过该长度走剪贴板粘贴
-    correct: bool = True        # 词表纠错层开关（度量收益用）
+    correct: bool = True  # 词表纠错层开关（度量收益用）
 
 
 class DictationService:
@@ -68,7 +68,9 @@ class DictationService:
         if inject and corrected:
             try:
                 method = inject_text(
-                    corrected, mode=self.options.inject, paste_threshold=self.options.paste_threshold
+                    corrected,
+                    mode=self.options.inject,
+                    paste_threshold=self.options.paste_threshold,
                 )
                 injected = True
             except InjectError as exc:

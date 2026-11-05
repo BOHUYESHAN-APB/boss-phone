@@ -66,6 +66,12 @@ def build_parser() -> argparse.ArgumentParser:
 
 
 def main(argv: list[str] | None = None) -> int:
+    # Windows 控制台默认 GBK（cp936）：中文日志会抛 UnicodeEncodeError。
+    # 与 hub-lite.py 一致显式切 UTF-8，保证本地与 CI 输出相同。
+    for stream in (sys.stdout, sys.stderr):
+        if hasattr(stream, "reconfigure"):
+            stream.reconfigure(encoding="utf-8", errors="replace")
+
     p = build_parser()
     args = p.parse_args(argv)
     try:

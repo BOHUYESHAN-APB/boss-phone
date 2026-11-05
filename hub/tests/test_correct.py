@@ -1,4 +1,5 @@
 """hub 逻辑测试：词表纠错层（DESIGN_OVERVIEW §8.3/§8.6）。"""
+
 from hub.operator.correct import TextCorrector
 
 
@@ -7,12 +8,18 @@ def test_bio_cli_term_cases():
     cases = [
         ("会让小张把特事跑一遍。", "会让小张把测试跑一遍。"),
         ("8BWA比隊跑一遍,參考基因組用HG38。", "8BWA比对跑一遍,参考基因组用hg38。"),
-        ("用fastq 检查一下测序数据的质量,然后用multiq会总。",
-         "用fastq 检查一下测序数据的质量,然后用multiq汇总。"),
-        ("在內,Passport倉庫上rebase一下主分支,然後提交PR。",
-         "在内,Passport仓库上rebase一下主分支,然后提交PR。"),
-        ("看一下Graphub，CI的結果，clippy的警告都修掉。",
-         "看一下github，CI的结果，clippy的警告都修掉。"),
+        (
+            "用fastq 检查一下测序数据的质量,然后用multiq会总。",
+            "用fastq 检查一下测序数据的质量,然后用multiq汇总。",
+        ),
+        (
+            "在內,Passport倉庫上rebase一下主分支,然後提交PR。",
+            "在内,Passport仓库上rebase一下主分支,然后提交PR。",
+        ),
+        (
+            "看一下Graphub，CI的結果，clippy的警告都修掉。",
+            "看一下github，CI的结果，clippy的警告都修掉。",
+        ),
     ]
     c = TextCorrector()
     for raw, expect in cases:

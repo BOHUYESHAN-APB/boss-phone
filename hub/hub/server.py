@@ -38,7 +38,9 @@ async def run_server(cfg: HubConfig) -> None:
             for s in registry.stale():
                 print(f"[heartbeat] 设备失联: {s.device_id} link={s.link}")
                 registry.remove(s.device_id)
-                await bus.publish("device.left", {"device_id": s.device_id, "reason": "heartbeat-timeout"})
+                await bus.publish(
+                    "device.left", {"device_id": s.device_id, "reason": "heartbeat-timeout"}
+                )
             print(f"[heartbeat] 巡检: 活跃会话 {registry.active_count()}")
 
     tasks.append(asyncio.create_task(heartbeat_loop(), name="heartbeat"))

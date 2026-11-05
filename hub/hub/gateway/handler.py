@@ -8,10 +8,10 @@
 from __future__ import annotations
 
 import time
-from typing import Awaitable, Callable, Optional
+from collections.abc import Awaitable, Callable
 
 from hub.core.eventbus import EventBus
-from hub.core.session import DeviceSession, DeviceRegistry
+from hub.core.session import DeviceRegistry, DeviceSession
 from hub.gateway.framing import make_envelope
 
 PROTO_VERSION = 1
@@ -22,12 +22,12 @@ SERVER_CAPS = ["voice.stt", "state.push", "ring", "memo"]
 async def handle_control(
     bus: EventBus,
     registry: DeviceRegistry,
-    session: Optional[DeviceSession],
+    session: DeviceSession | None,
     msg: dict,
     *,
     link: str,
     send: Callable[[dict], Awaitable[None]],
-) -> Optional[DeviceSession]:
+) -> DeviceSession | None:
     """处理一条控制帧，返回更新后的会话（hello 后为新会话，未握手则 None）。"""
     mtype = msg.get("type")
     if mtype == "hello":

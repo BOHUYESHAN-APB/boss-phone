@@ -6,12 +6,12 @@
 
 from __future__ import annotations
 
-from enum import Enum
+from enum import StrEnum
 
 
-class Route(str, Enum):
-    DIRECT = "direct"    # 目标设备有活跃会话 → 直发（零公网暴露）
-    RELAY = "relay"      # 全失活 + 中继开启 → 云中继推送唤醒
+class Route(StrEnum):
+    DIRECT = "direct"  # 目标设备有活跃会话 → 直发（零公网暴露）
+    RELAY = "relay"  # 全失活 + 中继开启 → 云中继推送唤醒
     OFFLINE = "offline"  # 全失活 + 中继关闭 → 写离线队列，等回连补发
 
 

@@ -18,13 +18,18 @@ from __future__ import annotations
 
 import argparse
 import sys
-import time
 
 from hub.audio import SAMPLE_RATE, load_pcm_mono_16k
 from hub.dictation import DictationOptions, DictationService
 from hub.input.inject import foreground_window_title
 from hub.operator.correct import TextCorrector
 from hub.operator.stt import create_engine
+
+# Windows 控制台默认 GBK（cp936），输出 ✓/✗ 会抛 UnicodeEncodeError。
+# 显式切到 UTF-8，保证中英文与符号在所有平台一致（CI 的 Linux 上本就是 UTF-8）。
+for _stream in (sys.stdout, sys.stderr):
+    if hasattr(_stream, "reconfigure"):
+        _stream.reconfigure(encoding="utf-8", errors="replace")
 
 
 def _cmd_selftest() -> int:
@@ -53,14 +58,26 @@ def _cmd_selftest() -> int:
 def main(argv: list[str] | None = None) -> int:
     p = argparse.ArgumentParser(prog="hub-lite", description="M0 语音链路验证 + 语音输入法")
     p.add_argument("wav", nargs="?", help="16kHz/16bit/mono WAV 样本（--selftest 时可不带）")
-    p.add_argument("--engine", default="windows", choices=["windows", "whisper", "cloud"],
-                   help="STT 引擎（默认 windows）")
+    p.add_argument(
+        "--engine",
+        default="windows",
+        choices=["windows", "whisper", "cloud"],
+        help="STT 引擎（默认 windows）",
+    )
     p.add_argument("--model", default=None, help="whisper 引擎的模型路径/名称（默认 base）")
     p.add_argument("--hotwords", default="", help="热词/词表（逗号分隔，注入 initial_prompt）")
-    p.add_argument("--type", action="store_true", dest="type_",
-                   help="语音输入法模式：纠错后的文字直接打到当前光标处")
-    p.add_argument("--inject", default="auto", choices=["type", "paste", "auto"],
-                   help="注入方式（默认 auto：短文本逐字、长文本剪贴板）")
+    p.add_argument(
+        "--type",
+        action="store_true",
+        dest="type_",
+        help="语音输入法模式：纠错后的文字直接打到当前光标处",
+    )
+    p.add_argument(
+        "--inject",
+        default="auto",
+        choices=["type", "paste", "auto"],
+        help="注入方式（默认 auto：短文本逐字、长文本剪贴板）",
+    )
     p.add_argument("--no-correct", action="store_true", help="关闭词表纠错层（度量收益）")
     p.add_argument("--terms", default=None, help="用户词表 JSON（热更新）")
     p.add_argument("--selftest", action="store_true", help="仅注入能力自检，不识别音频")

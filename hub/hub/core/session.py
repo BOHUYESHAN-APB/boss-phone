@@ -7,8 +7,8 @@ CDC/WS/中继隧道各自解析帧后，在此登记为同一 `DeviceSession`，
 from __future__ import annotations
 
 import time
+from collections.abc import Awaitable, Callable
 from dataclasses import dataclass, field
-from typing import Awaitable, Callable, Optional
 
 # 心跳：设备 10s 一个 ping；Hub 30s 巡检，连续 2 次超时判失联 → stale 阈值 60s
 HEARTBEAT_PING_S = 10
@@ -19,13 +19,13 @@ STALE_AFTER_S = HEARTBEAT_PATROL_S * 2
 @dataclass
 class DeviceSession:
     device_id: str
-    link: str                       # cdc | ws
+    link: str  # cdc | ws
     caps: list[str]
     fw: str
-    resume_seq: Optional[int] = None  # 断线补收游标（DESIGN_PROTOCOL §4.2）
-    seq_out: int = 1                # Hub → 本设备 的出站 seq（每设备独立）
+    resume_seq: int | None = None  # 断线补收游标（DESIGN_PROTOCOL §4.2）
+    seq_out: int = 1  # Hub → 本设备 的出站 seq（每设备独立）
     last_seen: float = field(default_factory=time.monotonic)
-    send: Optional[Callable[[dict], Awaitable[None]]] = None  # 网关注入的发送器
+    send: Callable[[dict], Awaitable[None]] | None = None  # 网关注入的发送器
 
     def touch(self) -> None:
         self.last_seen = time.monotonic()
@@ -48,7 +48,7 @@ class DeviceRegistry:
     def add(self, session: DeviceSession) -> None:
         self._sessions[session.device_id] = session
 
-    def get(self, device_id: str) -> Optional[DeviceSession]:
+    def get(self, device_id: str) -> DeviceSession | None:
         return self._sessions.get(device_id)
 
     def remove(self, device_id: str) -> None:

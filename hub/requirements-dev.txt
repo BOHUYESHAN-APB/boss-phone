@@ -1,0 +1,5 @@
+# BOSS PHONE Hub 开发/测试依赖（CI 与本地跑测试时安装）
+# 运行依赖见 requirements.txt
+pytest>=8
+jsonschema>=4
+ruff>=0.6

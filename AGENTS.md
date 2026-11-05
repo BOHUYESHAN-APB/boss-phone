@@ -99,4 +99,4 @@ Python：4 空格缩进，模块/函数 `snake_case`，类型注解与 `from __f
 
 History follows Conventional Commit-style subjects such as `feat(bsp): ...`, `feat(hub): ...`, `feat(protocol): ...`, `fix(bsp): ...`, and `docs: ...`. Keep commits focused by subsystem. Pull requests should explain the hardware/revision tested, summarize behavior changes, list build and on-device results, and include photos or screenshots for display changes. Link related issues and call out wiring, pin-map, or compatibility impacts.
 
-构建 / 评测产物不要入库：`build/`、`sdkconfig`、`managed_components/`、`hub/.venv/`、`__pycache__/`、`.pytest_cache/`、`.ruff_cache/`、`tools/stt-samples/out/`、`tools/pdf-export/_out/`、`node_modules/`、`hub.toml` 已在 `.gitignore` 内；`docs/pdf/*.pdf` 与 `Cargo.lock` **是要入库的**。
+构建 / 评测产物不要入库：`build/`、`sdkconfig`、`managed_components/`、`hub/.venv/`、`__pycache__/`、`.pytest_cache/`、`.ruff_cache/`、`tools/stt-samples/out/`、`tools/pdf-export/_out/`、`node_modules/`、`hub.toml` 已在 `.gitignore` 内；`docs/pdf/*.pdf`、`Cargo.lock`、`reference/folotoy-card-demo/dependencies.lock` **是要入库的**（后两者是依赖锁，删掉会让 CI 在依赖求解阶段解析到新版本并失败）。

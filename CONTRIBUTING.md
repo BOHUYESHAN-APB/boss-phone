@@ -98,6 +98,7 @@ cd ../..
 > `firmware/` 目前没有 `main/`，`idf.py build` 不产出可烧录固件；固件侧验证一律走上面的参考 demo。
 
 - 协议生成器输出**必须提交**：`protocol/c/boss_protocol.h`、`protocol/rust/src/messages.rs`、`protocol/kotlin/BossProtocol.kt`、`protocol/python/boss_protocol.py`、`protocol/vectors/golden.json`。
+- 依赖锁**必须提交**：`Cargo.lock`、`reference/folotoy-card-demo/dependencies.lock`。后者与 `firmware/components/bsp/idf_component.yml` 的依赖字段配套（`manifest_hash`），单独改一边会触发 CI 重解依赖并失败，详见 `.github/workflows/ci.yml` 的 firmware job 注释。
 - 涉及 `tools/pdf-export/` 的改动可额外跑 `cd tools/pdf-export && npm ci && npm run export`（需要本机 Chrome/Edge，产物在 `_out/`，已被 gitignore）。
 - 不要在 PR 里提交 `build/`、`target/`、`.venv/`、模型文件、录音样例产物等生成物（见 `.gitignore`）。
 

@@ -3,8 +3,10 @@ build/
 sdkconfig
 sdkconfig.old
 managed_components/
-dependencies.lock
 .vscode/
+# 注：dependencies.lock 提交入库——它是 idf-component-manager 的解析结果锁，
+#     删掉后 `^9.5.0` 这类范围会在 CI 上重新解析到新版本；lvgl 9.6.0 起带
+#     $CONFIG{LV_USE_FREETYPE} 条件依赖，求解阶段会报 MissingKconfigError。
 
 # ---- Rust（hub / plugins workspace）----
 # 注：Cargo.lock 提交入库——tools/stt-validate 是可执行产物（CLI），

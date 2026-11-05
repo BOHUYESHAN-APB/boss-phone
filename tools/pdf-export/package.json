@@ -6,7 +6,7 @@
     "export": "node export.mjs"
   },
   "dependencies": {
-    "markdown-it": "^14.1.0",
+    "markdown-it": "^15.0.3",
     "markdown-it-anchor": "^9.2.0",
     "mermaid": "^11.4.1",
     "puppeteer-core": "^23.11.1"

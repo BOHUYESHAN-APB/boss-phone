@@ -36,7 +36,8 @@ class DeviceSession:
         return seq
 
     def is_stale(self, now: float | None = None) -> bool:
-        return (now or time.monotonic()) - self.last_seen > STALE_AFTER_S
+        t = time.monotonic() if now is None else now
+        return t - self.last_seen > STALE_AFTER_S
 
 
 class DeviceRegistry:
@@ -58,5 +59,5 @@ class DeviceRegistry:
         return len(self._sessions)
 
     def stale(self, now: float | None = None) -> list[DeviceSession]:
-        t = now or time.monotonic()
+        t = time.monotonic() if now is None else now
         return [s for s in self._sessions.values() if s.is_stale(t)]

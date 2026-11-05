@@ -19,9 +19,12 @@ def test_next_seq_increments_from_one():
 def test_is_stale_threshold():
     """失联阈值 STALE_AFTER_S（60s）：边界不 stale，超过才 stale。"""
     s = _session()
-    assert not s.is_stale(s.last_seen + STALE_AFTER_S)  # 恰好 60s：仍在
-    assert s.is_stale(s.last_seen + STALE_AFTER_S + 0.01)  # 超过：失联
-    assert not s.is_stale()  # 刚建：活跃
+    # 用整数值构造边界：monotonic() 的小数尾数会让 (t+60)-t 出现
+    # 60.00000000000001 这类浮点误差，边界断言会随机失败（CI 上已实际发生）。
+    s.last_seen = 1000.0
+    assert not s.is_stale(1000.0 + STALE_AFTER_S)  # 恰好 60s：仍在
+    assert s.is_stale(1000.0 + STALE_AFTER_S + 0.01)  # 超过：失联
+    assert not _session().is_stale()  # 刚建：活跃
 
 
 def test_touch_refreshes_last_seen():
